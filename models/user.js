@@ -22,9 +22,19 @@ const userSchema = new mongoose.Schema(
 		},
 		password: {
 			type: String,
-			required: true,
+			required: false,
 			minlength: 6,
 			select: false,
+		},
+		provider: {
+			type: String,
+			enum: ['local', 'google'],
+			default: 'local',
+		},
+		googleId: {
+			type: String,
+			trim: true,
+			sparse: true,
 		},
 		purchasedCourses: [
 			{
@@ -46,6 +56,10 @@ userSchema.pre('save', async function hashPassword() {
 });
 
 userSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+	if (!this.password) {
+		return false;
+	}
+
 	return bcrypt.compare(candidatePassword, this.password);
 };
 

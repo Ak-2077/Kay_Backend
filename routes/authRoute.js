@@ -3,6 +3,7 @@ import {
 	changePassword,
 	deleteAccount,
 	getCurrentUser,
+	loginWithGoogle,
 	loginUser,
 	registerUser,
 	updateProfile,
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/google', loginWithGoogle);
 router.get('/me', protect, getCurrentUser);
 router.put('/profile', protect, updateProfile);
 router.patch('/password', protect, changePassword);

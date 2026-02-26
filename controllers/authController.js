@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import User from '../models/user.js';
 import Cart from '../models/cart.js';
 import Order from '../models/order.js';
+
+const googleClient = new OAuth2Client();
 
 const generateToken = (userId) =>
 	jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -52,6 +55,10 @@ export const loginUser = async (req, res) => {
 			return res.status(401).json({ message: 'Invalid email or password.' });
 		}
 
+		if (!user.password) {
+			return res.status(400).json({ message: 'This account uses Google login. Please continue with Google.' });
+		}
+
 		const isMatch = await user.comparePassword(password);
 		if (!isMatch) {
 			return res.status(401).json({ message: 'Invalid email or password.' });
@@ -70,6 +77,80 @@ export const loginUser = async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({ message: error.message || 'Server error' });
+	}
+};
+
+export const loginWithGoogle = async (req, res) => {
+	try {
+		const { credential } = req.body;
+		const clientId = process.env.GOOGLE_CLIENT_ID;
+
+		if (!clientId) {
+			return res.status(500).json({ message: 'GOOGLE_CLIENT_ID is not configured on server.' });
+		}
+
+		if (!credential || typeof credential !== 'string') {
+			return res.status(400).json({ message: 'Google credential token is required.' });
+		}
+
+		const ticket = await googleClient.verifyIdToken({
+			idToken: credential,
+			audience: clientId,
+		});
+
+		const payload = ticket.getPayload();
+		if (!payload || !payload.email) {
+			return res.status(400).json({ message: 'Invalid Google token payload.' });
+		}
+
+		if (!payload.email_verified) {
+			return res.status(400).json({ message: 'Google email is not verified.' });
+		}
+
+		const email = payload.email.toLowerCase();
+		const googleId = payload.sub;
+		const name = payload.name || email.split('@')[0] || 'Google User';
+
+		let user = await User.findOne({ email });
+
+		if (!user) {
+			user = await User.create({
+				name,
+				email,
+				googleId,
+				provider: 'google',
+			});
+		} else {
+			let shouldSave = false;
+
+			if (!user.googleId) {
+				user.googleId = googleId;
+				shouldSave = true;
+			}
+
+			if (!user.provider) {
+				user.provider = 'google';
+				shouldSave = true;
+			}
+
+			if (shouldSave) {
+				await user.save();
+			}
+		}
+
+		const token = generateToken(user._id);
+
+		return res.status(200).json({
+			message: 'Google login successful.',
+			token,
+			user: {
+				id: user._id,
+				name: user.name,
+				email: user.email,
+			},
+		});
+	} catch (error) {
+		return res.status(401).json({ message: 'Google authentication failed.' });
 	}
 };
 
