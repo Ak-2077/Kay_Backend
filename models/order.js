@@ -68,6 +68,25 @@ const orderSchema = new mongoose.Schema(
     paymentId: {
       type: String,
     },
+    idempotencyKey: {
+      type: String,
+      trim: true,
+      sparse: true,
+    },
+    razorpayOrderId: {
+      type: String,
+      trim: true,
+      sparse: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+      trim: true,
+      sparse: true,
+    },
+    razorpaySignature: {
+      type: String,
+      trim: true,
+    },
     paymentType: {
       type: String,
       enum: ['india', 'international'],
@@ -88,6 +107,9 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+orderSchema.index({ user: 1, idempotencyKey: 1 }, { unique: true, sparse: true });
+orderSchema.index({ razorpayOrderId: 1 }, { unique: true, sparse: true });
 
 const Order = mongoose.model('Order', orderSchema);
 

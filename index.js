@@ -12,7 +12,15 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+
+const jsonParser = express.json();
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/orders/webhook') {
+        return next();
+    }
+
+    return jsonParser(req, res, next);
+});
 
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'Backend API is running' });
