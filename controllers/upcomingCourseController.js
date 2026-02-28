@@ -30,12 +30,18 @@ export const createUpcomingCourse = async (req, res) => {
       courseType,
       audio,
       status,
-      image,
       active,
       sortOrder,
     } = req.body;
 
-    if (!title || !image) {
+    let imagePath = '';
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+    } else if (req.body.image) {
+      imagePath = req.body.image;
+    }
+
+    if (!title || !imagePath) {
       return res.status(400).json({ message: 'Title and image are required.' });
     }
 
@@ -46,7 +52,7 @@ export const createUpcomingCourse = async (req, res) => {
       courseType,
       audio,
       status,
-      image,
+      image: imagePath,
       active: typeof active === 'boolean' ? active : true,
       sortOrder: Number.isFinite(Number(sortOrder)) ? Number(sortOrder) : 0,
     });
