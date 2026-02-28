@@ -6,6 +6,8 @@ import authRoutes from './routes/authRoute.js';
 import cartRoutes from './routes/cartRoute.js';
 import orderRoutes from './routes/orderRoute.js';
 import courseRoutes from './routes/courseRoute.js';
+import adminRoutes from './routes/adminRoute.js';
+import upcomingCourseRoutes from './routes/upcomingCourseRoute.js';
 
 dotenv.config();
 
@@ -39,9 +41,11 @@ app.use('/api', async (req, res, next) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/upcoming-courses', upcomingCourseRoutes);
 
 if (!process.env.VERCEL) {
     connectDB().catch((error) => {

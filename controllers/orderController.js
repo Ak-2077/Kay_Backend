@@ -322,7 +322,6 @@ export const getMyCourseAccess = async (req, res) => {
         purchasedAt: item.purchasedAt,
         paymentStatus: 'paid',
         videoUrl: primaryVideoUrl,
-        downloadUrl: primaryVideoUrl,
       });
     });
 

@@ -1,4 +1,5 @@
 import express from 'express';
+import adminProtect from '../middleware/adminMiddleware.js';
 import {
   getAllCourses,
   getCourseById,
@@ -14,10 +15,10 @@ const router = express.Router();
 router.get('/', getAllCourses);
 router.get('/:id', getCourseById);
 
-// Protected routes (require admin/instructor role - optional for now)
-router.post('/', createCourse);
-router.put('/:id', updateCourse);
-router.delete('/:id', deleteCourse);
-router.post('/:id/videos', addVideoToCourse);
+// Admin protected routes
+router.post('/', adminProtect, createCourse);
+router.put('/:id', adminProtect, updateCourse);
+router.delete('/:id', adminProtect, deleteCourse);
+router.post('/:id/videos', adminProtect, addVideoToCourse);
 
 export default router;
