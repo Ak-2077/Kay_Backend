@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const cartItemSchema = new mongoose.Schema(
   {
     courseId: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
     },
     title: {

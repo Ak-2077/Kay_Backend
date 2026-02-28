@@ -5,8 +5,12 @@ const isValidCoursePayload = (course) => {
     return false;
   }
 
+  const validCourseId =
+    typeof course.id === 'number' ||
+    (typeof course.id === 'string' && course.id.trim().length > 0);
+
   return (
-    typeof course.id === 'number' &&
+    validCourseId &&
     typeof course.title === 'string' &&
     typeof course.oldPrice === 'string' &&
     typeof course.newPrice === 'string' &&
@@ -22,7 +26,8 @@ const sanitizeIncomingItem = (item) => {
 
   const quantity = Number(item.quantity);
   if (
-    typeof item.courseId !== 'number' ||
+    (typeof item.courseId !== 'number' &&
+      (typeof item.courseId !== 'string' || item.courseId.trim().length === 0)) ||
     typeof item.title !== 'string' ||
     typeof item.oldPrice !== 'string' ||
     typeof item.newPrice !== 'string' ||
@@ -74,7 +79,7 @@ export const addToCart = async (req, res) => {
     }
 
     const cart = await getOrCreateCart(req.user._id);
-    const existingIndex = cart.items.findIndex((item) => item.courseId === course.id);
+    const existingIndex = cart.items.findIndex((item) => String(item.courseId) === String(course.id));
 
     if (existingIndex >= 0) {
       cart.items[existingIndex].quantity += 1;
