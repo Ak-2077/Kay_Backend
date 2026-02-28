@@ -25,6 +25,7 @@ export const createUpcomingCourse = async (req, res) => {
   try {
     const {
       title,
+      image,
       level,
       episode,
       courseType,
@@ -34,19 +35,18 @@ export const createUpcomingCourse = async (req, res) => {
       sortOrder,
     } = req.body;
 
-
     if (!title || !image) {
       return res.status(400).json({ message: 'Title and image are required.' });
     }
 
     const course = await UpcomingCourse.create({
       title,
+      image,
       level,
       episode,
       courseType,
       audio,
       status,
-      image,
       active: typeof active === 'boolean' ? active : true,
       sortOrder: Number.isFinite(Number(sortOrder)) ? Number(sortOrder) : 0,
     });
