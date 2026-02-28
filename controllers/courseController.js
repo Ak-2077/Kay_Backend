@@ -111,3 +111,27 @@ export const addVideoToCourse = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const removeVideoFromCourse = async (req, res) => {
+  try {
+    const { id, videoId } = req.params;
+
+    const course = await Course.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          videos: { _id: videoId },
+        },
+      },
+      { new: true }
+    );
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    return res.status(200).json({ message: 'Video removed successfully', course });
+  } catch (error) {
+    return res.status(500).json({ message: error.message || 'Server error' });
+  }
+};

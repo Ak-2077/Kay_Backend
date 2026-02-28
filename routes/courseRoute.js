@@ -7,6 +7,7 @@ import {
   updateCourse,
   deleteCourse,
   addVideoToCourse,
+  removeVideoFromCourse,
 } from '../controllers/courseController.js';
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.post('/', adminProtect, createCourse);
 router.put('/:id', adminProtect, updateCourse);
 router.delete('/:id', adminProtect, deleteCourse);
 router.post('/:id/videos', adminProtect, addVideoToCourse);
+router.delete('/:id/videos/:videoId', adminProtect, removeVideoFromCourse);
 
 export default router;
