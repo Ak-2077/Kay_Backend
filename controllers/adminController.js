@@ -22,6 +22,13 @@ export const loginAdmin = async (req, res) => {
 
     const adminUsername = process.env.ADMIN_USERNAME;
     const adminPassword = process.env.ADMIN_PASSWORD;
+    // DEBUG LOGGING - REMOVE AFTER TESTING
+    console.log('DEBUG ADMIN LOGIN:', {
+      adminUsername,
+      adminPassword,
+      receivedUsername: username,
+      receivedPassword: password,
+    });
 
     if (!adminUsername || !adminPassword) {
       return res.status(500).json({ message: 'Admin credentials are not configured.' });
