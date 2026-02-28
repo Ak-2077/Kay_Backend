@@ -44,9 +44,6 @@ app.get('/', (req, res) => {
 });
 
 
-// Serve uploads folder as static
-import path from 'path';
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use('/api', async (req, res, next) => {
     try {
